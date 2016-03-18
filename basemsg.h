@@ -6,30 +6,37 @@
 namespace fluid
 {
 
-class BaseMsg:public Message {
+class BaseMsg:public RawMessage {
     private:
-        char* data;
-        int len;
+        ENetPacket *_packet;
     public:
-        BaseMsg(const unsigned char* d, int dlen) {
-            data = (char*)malloc(dlen);
-            if (data != NULL) {
-                memcpy(data, d, dlen);
-                len = dlen;
-            }
+        BaseMsg(ENetPacket *p):_packet(p) {
+            
+        }
+        
+        BaseMsg(unsigned char* data, int len) {
+            _packet = enet_packet_create(data, len, ENET_PACKET_FLAG_RELIABLE);
         }
 
         ~BaseMsg() {
-            if (data != NULL)
-                free(data);
+            if (_packet != NULL)
+                enet_packet_destroy (_packet);
         }
 
-        char* getData(){
-            return data;
+        unsigned char* getData(){
+            return _packet->data;
         }
 
         int size() {
-            return len;
+            return _packet->dataLength;
+        }
+        
+        void swap(BaseMsg& message) {
+            std::swap(message._packet, this->_packet);
+        }
+        
+        ENetPacket* packet(){
+            return _packet;
         }
 
 };

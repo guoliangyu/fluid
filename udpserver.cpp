@@ -49,13 +49,15 @@ namespace fluid
         int pollret = 0;
         while (1)
         {
-            pollret = enet_host_service (server, & event, 1000);
+            pollret = enet_host_service (server, & event, 0);
             if (pollret > 0) {
                 switch (event.type)
                 {
                     case ENET_EVENT_TYPE_CONNECT:
                         {
                             if (NULL != event.peer) {
+                                //enet_peer_ping_interval(event.peer, 5000);
+                                //enet_peer_throttle_configure(event.peer, 50, 0, 0);
                                 UdpChannel *newChannel = new UdpChannel(event.peer, firstHandler);
                                 event.peer -> data = newChannel;
                                 newChannel->onCreate();
@@ -66,8 +68,8 @@ namespace fluid
                         {
                             UdpChannel *channel = (UdpChannel*)(event.peer->data);
                             if (channel != NULL) 
-                                channel->input(event.packet->data, event.packet->dataLength);
-                            enet_packet_destroy (event.packet);
+                                channel->input(new BaseMsg(event.packet));
+                            //enet_packet_destroy (event.packet);
                         }
                         break;
                     case ENET_EVENT_TYPE_DISCONNECT:
@@ -83,23 +85,27 @@ namespace fluid
                 fprintf(stderr, "udpserver error!!!");
                 break;
             }
+            if (firstHandler) {
+                firstHandler->flushOutMsg();
+                enet_host_flush(server);
+            }
+            if ( pollret == 0 ){
+                ::usleep(100);
+            }
         }
     }
 
     void UdpServer::addLastHandlerPool(HandlerThreadPool *threadPool){
         if(firstHandler){
             if (firstHandler->getNextPool() == NULL){
-                threadPool->setNextPool(firstHandler);
+                threadPool->insertPrevTo(firstHandler);
                 firstHandler = threadPool;
             } else {
                 HandlerThreadPool* last = firstHandler;
-                HandlerThreadPool* cur = firstHandler->getNextPool();
-                while(cur->getNextPool() != NULL){
-                    last = cur;
-                    cur = cur->getNextPool();
+                while(last->getNextPool() != NULL){
+                    last = last->getNextPool();
                 }
-                last->setNextPool(threadPool);
-                threadPool->setNextPool(cur);
+                threadPool->insertPrevTo(last);
             }
         }
         else

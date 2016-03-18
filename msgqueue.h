@@ -1,3 +1,6 @@
+#ifndef MSG_QUEUE__
+#define MSG_QUEUE__
+
 #include <queue>
 #include <stdio.h>
 
@@ -55,3 +58,4 @@ class MsgQueue{
 
 };
 
+#endif

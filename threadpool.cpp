@@ -8,7 +8,7 @@ namespace fluid
         for(int i = 0; i < threadNum; i++) {
             Thread *thread = factory.makeThread();
             if (thread != NULL && thread->start()) {
-                threads.insert(std::make_pair(thread->getId(), thread));
+                threads.push_back(thread);
             } else
                 ret = false;
         }
@@ -16,27 +16,27 @@ namespace fluid
     }
 
     void ThreadPool::release() {
-        for(std::map<int, Thread*>::iterator it = threads.begin(); it != threads.end(); ++it) {
-            Thread* thread = it->second;
+        for(int i = 0; i < threads.size(); i++) {
+            Thread* thread = threads[i];
             if(thread != NULL && thread->isJoinable()) {
                 thread->final();
                 thread->join();
                 delete thread;
-                it->second = NULL;
             }
         }
     }
 
     void ThreadPool::finalAll() {
-        for(std::map<int, Thread*>::iterator it = threads.begin(); it != threads.end(); ++it) {
-            if (it->second)
-                it->second->final();
+        for(int i = 0; i < threads.size(); i++) {
+            Thread* thread = threads[i];
+            if (thread != NULL)
+                thread->final();
         }
     }
 
     void ThreadPool::joinAll() {
-        for(std::map<int, Thread*>::iterator it = threads.begin(); it != threads.end(); ++it) {
-            Thread* thread = it->second;
+        for(int i = 0; i < threads.size(); i++) {
+            Thread* thread = threads[i];
             if(thread != NULL && thread->isJoinable()) {
                 thread->join();
                 delete thread;

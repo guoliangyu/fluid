@@ -114,6 +114,10 @@ namespace fluid
                     lock->unlock();
             }
 
+            bool invalid(T id) {
+                return id >= minId && id < maxId;
+            }
+
     };
 
 }

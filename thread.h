@@ -72,7 +72,6 @@ class Thread : private Noncopyable
             return name;
         }
 
-
         static void* threadFunc(void*);
 };
 

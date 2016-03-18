@@ -12,10 +12,9 @@ namespace fluid
     {
         private:
             ENetPeer* peer;
-            HandlerThreadPool* firstHandler;
         public:
-            UdpChannel(ENetPeer* p, HandlerThreadPool* handler):peer(p),firstHandler(handler) {
-
+            UdpChannel(ENetPeer* p, HandlerThreadPool* handler):peer(p),Channel(handler) {
+                
             }
 
             ~UdpChannel() {
@@ -29,15 +28,9 @@ namespace fluid
                     return 0;
             }
 
-            void send(const unsigned char* data, int len);
+            virtual void send(const unsigned char* data, int len);
 
-            void flush();
-
-            void input(const unsigned char* data, int len);
-
-            void onCreate();
-
-            void onClose();
+            virtual void flush();
 
     };
 

@@ -11,27 +11,7 @@ namespace fluid
     }
 
     void UdpChannel::flush() {
-        enet_host_flush (peer -> host); 
-    }
-
-    void UdpChannel::input(const unsigned char* data, int len) {
-        if (firstHandler) {
-            BaseMsg *msg = new BaseMsg(data, len);
-            if (msg && NULL != firstHandler) {
-                firstHandler->post(this, msg);
-            }
-        }
         
-    }
-
-    void UdpChannel::onCreate() {
-        ChannelEvent *e = new ChannelEvent(CHANNEL_EVENT_OPEN);
-        firstHandler->post(this, e);
-    }
-
-    void UdpChannel::onClose() {
-        ChannelEvent *e = new ChannelEvent(CHANNEL_EVENT_CLOSE);
-        firstHandler->post(this, e);
     }
 
 }

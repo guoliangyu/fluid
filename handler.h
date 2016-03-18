@@ -11,10 +11,10 @@ namespace fluid
 class Handler
 {
     public:
-        bool postMsg(Channel* channel, Message* msg) {
+        Message* postMsg(Channel* channel, Message* msg) {
             if(msg == NULL)
-                return false;
-            if (msg->type() == MSG_TYPE_USER)
+                return NULL;
+            if (msg->type() == MSG_TYPE_USER || msg->type() == MSG_TYPE_RAW)
                 return this->process(channel, msg);
             else if (msg->type() == MSG_TYPE_EVENT) {
                 ChannelEvent *event = (ChannelEvent*)msg;
@@ -23,10 +23,10 @@ class Handler
                 else if (event->isEvent(CHANNEL_EVENT_CLOSE)) 
                     onClose(channel, event);
             }
-            return true;
+            return msg;
         }
 
-        virtual bool process(Channel* channel, Message* msg) = 0;
+        virtual Message* process(Channel* channel, Message* msg) = 0;
 
         virtual void onCreate(Channel* channel, ChannelEvent* event) = 0;
         virtual void onClose(Channel* channel, ChannelEvent* event) = 0;

@@ -22,6 +22,14 @@ namespace fluid
             bool isEvent(ChannelEventType t){
                 return this->eType == t;
             }
+            
+            virtual int byteSize() const {
+                return 0;
+            }
+            
+            virtual int serialize(unsigned char* buf, int buflen) const {
+                return 0;
+            }
 
     };
 

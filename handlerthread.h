@@ -8,6 +8,7 @@
 #include "handler.h"
 #include "thread.h"
 #include "channel.h"
+#include <vector>
 
 namespace fluid
 {
@@ -16,27 +17,47 @@ class HandlerThreadPool;
 
 class HandlerThread : public Thread
 {
-    friend class HandlerThreadPool;
 
-    private:
-        Handler& handler;
-        MsgQueue<std::pair<Channel*, Message*> > msgQueue;
-        HandlerThreadPool *nextPool;
+    protected:
+        Handler* forwardHandler;
+        Handler* backwardHandler;
+        std::vector<MsgQueue<std::pair<Channel*,Message*> >* > forwardQueues;
+        std::vector<MsgQueue<std::pair<Channel*,Message*> >* > backwardQueues;
         
-        void setNextPool(HandlerThreadPool* pool) {
-            nextPool = pool;
-        }
+        virtual std::pair<Channel*,Message*>* forward(std::pair<Channel*,Message*>* channelMsg);
+        
+        virtual std::pair<Channel*,Message*>* backward(std::pair<Channel*,Message*>* channelMsg);
+        
         
     public:
-        HandlerThread(Handler& h, bool joinable=false):handler(h),Thread("", joinable){
-            nextPool = NULL;
+        HandlerThread(bool joinable=false):forwardHandler(NULL),backwardHandler(NULL),Thread("", joinable){
+            
+        }
+        
+        void addForwardQueue(MsgQueue<std::pair<Channel*,Message*> >* q) {
+            if (q == NULL)
+                return;
+            forwardQueues.push_back(q);
+        }
+        
+        void addBackwardQueue(MsgQueue<std::pair<Channel*,Message*> >* q) {
+            if (q == NULL)
+                return;
+            backwardQueues.push_back(q);
+        }
+        
+        void setForwardHandler(Handler* handler) {
+            forwardHandler = handler;
+        }
+        
+        void setBackwardHandler(Handler* handler) {
+            backwardHandler = handler;
         }
 
         ~HandlerThread();
 
-        void postMsg(Channel* channel, Message* msg);
-
         void run();
+
 };
 
 }
