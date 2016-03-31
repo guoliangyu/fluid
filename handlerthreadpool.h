@@ -15,6 +15,8 @@ class HandlerThreadPool : public ThreadPool, public HandlerThread
     private:
         HandlerThreadPool* next;
         HandlerThreadPool* prev;
+        
+        MsgQueue<std::pair<Channel*,Message*> > outQueue;
     protected:
 
         virtual HandlerThread* schedule(Channel* channel, Message *msg);

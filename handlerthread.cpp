@@ -47,6 +47,7 @@ namespace fluid
             channelMsg->second = msg;
             return channelMsg;
         }
+        return channelMsg;
     }
         
     std::pair<Channel*,Message*>* HandlerThread::backward(std::pair<Channel*,Message*>* channelMsg) {
@@ -63,6 +64,7 @@ namespace fluid
             channelMsg->second = msg;
             return channelMsg;
         }
+        return channelMsg;
     }
 
     HandlerThread::~HandlerThread(){

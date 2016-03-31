@@ -1,6 +1,7 @@
 #include "udpchannel.h"
 #include "basemsg.h"
 #include "channelevent.h"
+#include <glog/logging.h>
 
 namespace fluid 
 {

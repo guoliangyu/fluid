@@ -15,7 +15,7 @@
 #define QUEUEHANDLERTHREAD_H
 
 #include "handlerthread.h"
-
+#include <glog/logging.h>
 
 namespace fluid {
 
@@ -63,8 +63,9 @@ namespace fluid {
 
         std::pair<Channel*,Message*>* backward(std::pair<Channel*, Message*> *m) {
             std::pair<Channel*,Message*>* ret = HandlerThread::backward(m);
-            if (ret != NULL)
+            if (ret != NULL){
                 outQueueAfter.push(m);
+            }
             return ret;
         }
 
